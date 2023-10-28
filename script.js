@@ -3,7 +3,7 @@ const saveItemBtns = document.querySelectorAll(".solid");
 const addItemContainers = document.querySelectorAll(".add-container");
 const addItems = document.querySelectorAll(".add-item");
 // Item Lists
-const itemLists = document.querySelectorAll(".drag-item-list");
+const listColumns = document.querySelectorAll(".drag-item-list");
 const backlogList = document.getElementById("backlog-list");
 const progressList = document.getElementById("progress-list");
 const completeList = document.getElementById("complete-list");
@@ -20,6 +20,8 @@ let onHoldListArray = [];
 let listArrays = [];
 
 // Drag Functionality
+let draggedItem;
+let currentColumn;
 
 // Get Arrays from localStorage if available, set default values if not
 function getSavedColumns() {
@@ -63,6 +65,8 @@ function createItemEl(columnEl, column, item, index) {
   // List Item
   const listEl = document.createElement("li");
   listEl.classList.add("drag-item");
+  listEl.draggable = true;
+  listEl.setAttribute("ondragstart", "drag(event)"); // function to know what happens when start to drag
   // adding the text to the element
   listEl.textContent = item;
   // apend
@@ -96,6 +100,35 @@ function updateDOM() {
     createItemEl(onHoldList, 0, onHoldItem, index);
   });
   // Run getSavedColumns only once, Update Local Storage
+}
+
+// what happens when element start dragging
+function drag(event) {
+  draggedItem = event.target;
+  console.log(draggedItem);
+}
+
+//Column Allows for item to drop , this function has to be in every column container
+function allowDrop(event) {
+  event.preventDefault();
+}
+
+// Dropping item in column  , this function has to be in every column container
+function drop(event) {
+  event.preventDefault();
+  // remove styles when the element is over
+  listColumns.forEach((column) => {
+    column.classList.remove("over");
+    // Add item to the column
+    const parent = listColumns[currentColumn];
+    parent.appendChild(draggedItem);
+  });
+}
+
+// what happens when item enters to column area
+function dragEnter(column) {
+  listColumns[column].classList.add("over"); // adding styles when element enter in the column area
+  currentColumn = column;
 }
 
 // on Load
