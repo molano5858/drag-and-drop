@@ -48,7 +48,6 @@ function updateSavedColumns() {
     onHoldListArray,
   ];
   const arrayNames = ["backlog", "progress", "complete", "onHold"];
-
   arrayNames.forEach((arrayName, index) => {
     localStorage.setItem(
       `${arrayName}Items`,
@@ -56,7 +55,6 @@ function updateSavedColumns() {
     );
   });
 }
-
 // Create DOM Elements for each list item
 function createItemEl(columnEl, column, item, index) {
   // List Item
@@ -112,7 +110,6 @@ function updateDOM() {
 // update an item when user change it or deleted if necessary
 function updateItem(index, column) {
   const selectedArray = listArrays[column];
-  console.log(selectedArray);
   const selectedColumnEl = listColumns[column].children;
   const newTextContent = selectedColumnEl[index].textContent;
 
@@ -131,36 +128,36 @@ function updateItem(index, column) {
 
 // allows arrays to reflec drag and drop items
 function rebuiltArrays() {
-  backlogListArray = []; // reset the array to not duplicate the items
-  for (let i = 0; i < backlogList.children.length; i++) {
-    backlogListArray.push(backlogList.children[i].textContent);
-  }
-  progressListArray = []; // reset the array to not duplicate the items
-  for (let i = 0; i < progressList.children.length; i++) {
-    progressListArray.push(progressList.children[i].textContent);
-  }
-  completeListArray = []; // reset the array to not duplicate the items
-  for (let i = 0; i < completeList.children.length; i++) {
-    completeListArray.push(completeList.children[i].textContent);
-  }
-  onHoldListArray = []; // reset the array to not duplicate the items
-  for (let i = 0; i < onHoldList.children.length; i++) {
-    onHoldListArray.push(onHoldList.children[i].textContent);
-  }
+  // backlogListArray = []; //reset the array to not duplicate the items
+  // for (let i = 0; i < backlogList.children.length; i++) {
+  //   backlogListArray.push(backlogList.children[i].textContent);
+  // }
+
+  // I´ll refactor this block above (and the same block for progress, complete and onHold) the blocks were the same one right above just
+  // changed the names but I deleted them because  I refactored
+  backlogListArray = Array.from(backlogList.children).map(
+    (item) => item.textContent
+  ); // this line replace 4 lines above, backlogList is HTML collection so it needs to be an array to use .map for that use Array.from()
+  progressListArray = Array.from(progressList.children).map(
+    (item) => item.textContent
+  );
+  completeListArray = Array.from(completeList.children).map(
+    (item) => item.textContent
+  );
+  onHoldListArray = Array.from(onHoldList.children).map(
+    (item) => item.textContent
+  );
   updateDOM();
 }
-
 // what happens when element start dragging
 function drag(event) {
   draggedItem = event.target;
   isDragging = true; // when we are dragging this is true, and not allow to update the element
 }
-
 //Column Allows for item to drop , this function has to be in every column container
 function allowDrop(event) {
   event.preventDefault();
 }
-
 // Dropping item in column  , this function has to be in every column container
 function drop(event) {
   event.preventDefault();
@@ -174,13 +171,11 @@ function drop(event) {
   rebuiltArrays();
   isDragging = false; // when the drop is succesfull it means we are not dragging so in this point we can update the item, not before
 }
-
 // what happens when item enters to column area
 function dragEnter(column) {
   listColumns[column].classList.add("over"); // adding styles when element enter in the column area
   currentColumn = column;
 }
-
 // add the text typed in the add div to the column and reset the text box
 function addToColumn(column) {
   const itemText = addItems[column].textContent;
@@ -189,7 +184,6 @@ function addToColumn(column) {
   addItems[column].textContent = ""; // reset the input
   updateDOM();
 }
-
 // show add item input box
 function showInputBox(column) {
   addBtns[column].style.visibility = "hidden";
@@ -203,12 +197,10 @@ function hideInputBox(column) {
   addItemContainers[column].style.display = "none";
   addToColumn(column);
 }
-
 // filter arrays to remove empty items (1 use is to remove localStorage when delete an item)
 function filterArray(array) {
   const filteredArray = array.filter((element) => element !== null);
   return filteredArray;
 }
-
 // on Load
 updateDOM();
