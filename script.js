@@ -153,6 +153,15 @@ function dragEnter(column) {
   currentColumn = column;
 }
 
+// add the text typed in the add div to the column and reset the text box
+function addToColumn(column) {
+  const itemText = addItems[column].textContent;
+  const selectedArray = listArrays[column];
+  selectedArray.push(itemText);
+  updateDOM();
+  addItems[column].textContent = "";
+}
+
 // show add item input box
 function showInputBox(column) {
   addBtns[column].style.visibility = "hidden";
@@ -164,8 +173,7 @@ function hideInputBox(column) {
   addBtns[column].style.visibility = "visible";
   saveItemBtns[column].style.display = "none";
   addItemContainers[column].style.display = "none";
-  let textoNuevo = addItems[column].textContent;
-  console.log(textoNuevo);
+  addToColumn();
 }
 
 // on Load
