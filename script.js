@@ -20,8 +20,9 @@ let onHoldListArray = [];
 let listArrays = [];
 
 // Drag Functionality
-let draggedItem;
+let draggedItem = false;
 let currentColumn;
+let isDragging; // to prevent the error that when we click in the item we are editing it so it don´t allow to drag the item.
 
 // Get Arrays from localStorage if available, set default values if not
 function getSavedColumns() {
@@ -114,18 +115,18 @@ function updateItem(index, column) {
   console.log(selectedArray);
   const selectedColumnEl = listColumns[column].children;
   const newTextContent = selectedColumnEl[index].textContent;
-  // if (!newTextContent) {
-  //   delete selectedArray[index];
-  // }
-  // updateDOM();
 
-  if (!newTextContent) {
-    delete listArrays[column][index];
-  } else {
-    listArrays[column][index] = newTextContent;
+  if (!isDragging) {
+    // only when we are not dragging will be able to edit items because if we dont have this we´ll have a problem
+    // the problem is that the app don´t know if we are trying to edit or to drag
+    if (!newTextContent) {
+      delete listArrays[column][index];
+    } else {
+      listArrays[column][index] = newTextContent;
+    }
+    updateDOM();
+    updateSavedColumns();
   }
-  updateDOM();
-  updateSavedColumns();
 }
 
 // allows arrays to reflec drag and drop items
@@ -152,6 +153,7 @@ function rebuiltArrays() {
 // what happens when element start dragging
 function drag(event) {
   draggedItem = event.target;
+  isDragging = true; // when we are dragging this is true, and not allow to update the element
 }
 
 //Column Allows for item to drop , this function has to be in every column container
@@ -170,6 +172,7 @@ function drop(event) {
   const parent = listColumns[currentColumn];
   parent.appendChild(draggedItem);
   rebuiltArrays();
+  isDragging = false; // when the drop is succesfull it means we are not dragging so in this point we can update the item, not before
 }
 
 // what happens when item enters to column area
