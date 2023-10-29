@@ -66,6 +66,7 @@ function createItemEl(columnEl, column, item, index) {
   listEl.draggable = true;
   listEl.setAttribute("onfocusout", `updateItem(${index},${column})`);
   listEl.setAttribute("ondragstart", "drag(event)"); // function to know what happens when start to drag
+  listEl.contentEditable = true;
   // adding the text to the element
   listEl.textContent = item;
   // apend
@@ -83,23 +84,47 @@ function updateDOM() {
   backlogListArray.forEach((backlogItem, index) => {
     createItemEl(backlogList, 0, backlogItem, index);
   });
+  backlogListArray = filterArray(backlogListArray);
   // Progress Column
   progressList.textContent = ""; // reset progress Column
   progressListArray.forEach((progressItem, index) => {
-    createItemEl(progressList, 0, progressItem, index);
+    createItemEl(progressList, 1, progressItem, index);
   });
+  progressListArray = filterArray(progressListArray);
   // Complete Column
   completeList.textContent = ""; // reset complete Column
   completeListArray.forEach((completeItem, index) => {
-    createItemEl(completeList, 0, completeItem, index);
+    createItemEl(completeList, 2, completeItem, index);
   });
+  completeListArray = filterArray(completeListArray);
   // On Hold Column
   onHoldList.textContent = ""; // reset onHold Column
   onHoldListArray.forEach((onHoldItem, index) => {
-    createItemEl(onHoldList, 0, onHoldItem, index);
+    createItemEl(onHoldList, 3, onHoldItem, index);
   });
+  onHoldListArray = filterArray(onHoldListArray);
   // Run getSavedColumns only once, Update Local Storage
   updatedOnLoad = true;
+  updateSavedColumns();
+}
+
+// update an item when user change it or deleted if necessary
+function updateItem(index, column) {
+  const selectedArray = listArrays[column];
+  console.log(selectedArray);
+  const selectedColumnEl = listColumns[column].children;
+  const newTextContent = selectedColumnEl[index].textContent;
+  // if (!newTextContent) {
+  //   delete selectedArray[index];
+  // }
+  // updateDOM();
+
+  if (!newTextContent) {
+    delete listArrays[column][index];
+  } else {
+    listArrays[column][index] = newTextContent;
+  }
+  updateDOM();
   updateSavedColumns();
 }
 
@@ -174,6 +199,12 @@ function hideInputBox(column) {
   saveItemBtns[column].style.display = "none";
   addItemContainers[column].style.display = "none";
   addToColumn(column);
+}
+
+// filter arrays to remove empty items (1 use is to remove localStorage when delete an item)
+function filterArray(array) {
+  const filteredArray = array.filter((element) => element !== null);
+  return filteredArray;
 }
 
 // on Load
