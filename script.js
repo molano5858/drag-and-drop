@@ -158,8 +158,8 @@ function addToColumn(column) {
   const itemText = addItems[column].textContent;
   const selectedArray = listArrays[column];
   selectedArray.push(itemText);
+  addItems[column].textContent = ""; // reset the input
   updateDOM();
-  addItems[column].textContent = "";
 }
 
 // show add item input box
@@ -173,7 +173,7 @@ function hideInputBox(column) {
   addBtns[column].style.visibility = "visible";
   saveItemBtns[column].style.display = "none";
   addItemContainers[column].style.display = "none";
-  addToColumn();
+  addToColumn(column);
 }
 
 // on Load
