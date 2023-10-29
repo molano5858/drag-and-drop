@@ -58,14 +58,13 @@ function updateSavedColumns() {
 
 // Create DOM Elements for each list item
 function createItemEl(columnEl, column, item, index) {
-  // console.log("columnEl:", columnEl);
-  // console.log("column:", column);
-  // console.log("item:", item);
-  // console.log("index:", index);
   // List Item
   const listEl = document.createElement("li");
+  listEl.textContent = item;
+  listEl.id = index;
   listEl.classList.add("drag-item");
   listEl.draggable = true;
+  listEl.setAttribute("onfocusout", `updateItem(${index},${column})`);
   listEl.setAttribute("ondragstart", "drag(event)"); // function to know what happens when start to drag
   // adding the text to the element
   listEl.textContent = item;
@@ -100,12 +99,34 @@ function updateDOM() {
     createItemEl(onHoldList, 0, onHoldItem, index);
   });
   // Run getSavedColumns only once, Update Local Storage
+  updatedOnLoad = true;
+  updateSavedColumns();
+}
+
+// allows arrays to reflec drag and drop items
+function rebuiltArrays() {
+  backlogListArray = []; // reset the array to not duplicate the items
+  for (let i = 0; i < backlogList.children.length; i++) {
+    backlogListArray.push(backlogList.children[i].textContent);
+  }
+  progressListArray = []; // reset the array to not duplicate the items
+  for (let i = 0; i < progressList.children.length; i++) {
+    progressListArray.push(progressList.children[i].textContent);
+  }
+  completeListArray = []; // reset the array to not duplicate the items
+  for (let i = 0; i < completeList.children.length; i++) {
+    completeListArray.push(completeList.children[i].textContent);
+  }
+  onHoldListArray = []; // reset the array to not duplicate the items
+  for (let i = 0; i < onHoldList.children.length; i++) {
+    onHoldListArray.push(onHoldList.children[i].textContent);
+  }
+  updateDOM();
 }
 
 // what happens when element start dragging
 function drag(event) {
   draggedItem = event.target;
-  console.log(draggedItem);
 }
 
 //Column Allows for item to drop , this function has to be in every column container
@@ -119,16 +140,32 @@ function drop(event) {
   // remove styles when the element is over
   listColumns.forEach((column) => {
     column.classList.remove("over");
-    // Add item to the column
-    const parent = listColumns[currentColumn];
-    parent.appendChild(draggedItem);
   });
+  // Add item to the column
+  const parent = listColumns[currentColumn];
+  parent.appendChild(draggedItem);
+  rebuiltArrays();
 }
 
 // what happens when item enters to column area
 function dragEnter(column) {
   listColumns[column].classList.add("over"); // adding styles when element enter in the column area
   currentColumn = column;
+}
+
+// show add item input box
+function showInputBox(column) {
+  addBtns[column].style.visibility = "hidden";
+  saveItemBtns[column].style.display = "flex";
+  addItemContainers[column].style.display = "flex";
+}
+// hide add item input box
+function hideInputBox(column) {
+  addBtns[column].style.visibility = "visible";
+  saveItemBtns[column].style.display = "none";
+  addItemContainers[column].style.display = "none";
+  let textoNuevo = addItems[column].textContent;
+  console.log(textoNuevo);
 }
 
 // on Load
